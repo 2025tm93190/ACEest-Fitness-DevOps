@@ -1,8 +1,10 @@
+
 pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'aceest-fitness'
+        PYTHON = 'C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe'
+        IMAGE_NAME = 'aceest-fitness:latest'
     }
 
     stages {
@@ -12,35 +14,44 @@ pipeline {
             }
         }
 
-        stage('Python syntax check') {
+        stage('Python Syntax Check') {
             steps {
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m py_compile app.py tests\\test_app.py'
+                bat 'dir'
+                bat '\"%PYTHON%\" -m py_compile app.py'
             }
         }
 
-        stage('Install dependencies and test') {
+        stage('Install Dependencies') {
             steps {
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pip install -r requirements.txt'
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pytest -v'
+                bat '\"%PYTHON%\" -m pip install -r requirements.txt'
             }
         }
 
-        stage('Build Docker image') {
+        stage('Run Pytest') {
             steps {
-                bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .'
+                bat '\"%PYTHON%\" -m pytest tests -v'
             }
         }
 
-        stage('Run tests in Docker') {
+        stage('Build Docker Image') {
             steps {
-                bat 'docker run --rm %IMAGE_NAME%:%BUILD_NUMBER% python -m pytest -v'
+                bat 'docker build -t %IMAGE_NAME% .'
+            }
+        }
+
+        stage('Test Inside Docker') {
+            steps {
+                bat 'docker run --rm %IMAGE_NAME% python -m pytest tests -v'
             }
         }
     }
 
     post {
-        always {
-            echo 'ACEest Fitness pipeline finished. Check the stage results above.'
+        success {
+            echo 'SUCCESS: Tests passed and the Docker image was built.'
+        }
+        failure {
+            echo 'FAILED: Check the stage logs above to find the error.'
         }
     }
 }
