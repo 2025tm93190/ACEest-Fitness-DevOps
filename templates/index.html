@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+{% block content %}
+<section class="welcome-row">
+  <div><p class="eyebrow">YOUR FITNESS HQ <span class="eyebrow-line"></span></p><h1>Make every rep <em>count.</em></h1><p class="subheading">Welcome back. Here's what's happening at your gym today.</p></div>
+  <a class="btn btn-primary" href="{{ url_for('new_member') }}"><span>＋</span> Add new member</a>
+</section>
+<section class="hero-banner">
+  <div class="hero-copy"><span class="hero-tag">THE ACEEST STANDARD</span><h2>Stronger starts<br>with <em>showing up.</em></h2><p>Build better habits, track your progress, and celebrate every milestone.</p><a href="{{ url_for('workouts') }}" class="hero-link">Log a workout <span>↗</span></a></div>
+  <div class="hero-art"><div class="hero-ring ring-one"></div><div class="hero-ring ring-two"></div><div class="hero-number">01<span>/ DAY</span></div><div class="hero-spark">✳</div></div>
+  <div class="hero-caption">MOVE WITH PURPOSE <span>•</span> GROW WITH INTENT</div>
+</section>
+<section class="stats-grid">
+  <article class="stat-card"><div class="stat-top"><span class="stat-label">TOTAL MEMBERS</span><span class="stat-icon green">♙</span></div><div class="stat-number">{{ stats.members }}</div><div class="stat-foot"><span class="tiny-dot"></span> Registered members</div></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-label">WORKOUT SESSIONS</span><span class="stat-icon purple">↗</span></div><div class="stat-number">{{ stats.workouts }}</div><div class="stat-foot">All-time logged sessions</div></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-label">ACTIVE MINUTES</span><span class="stat-icon orange">◷</span></div><div class="stat-number">{{ "{:,}".format(stats.minutes) }}<small> min</small></div><div class="stat-foot">Time spent moving</div></article>
+  <article class="stat-card"><div class="stat-top"><span class="stat-label">CALORIES LOGGED</span><span class="stat-icon blue">✦</span></div><div class="stat-number">{{ "{:,}".format(stats.calories) }}</div><div class="stat-foot">Workout energy estimate</div></article>
+</section>
+<section class="content-grid">
+  <div class="panel"><div class="panel-heading"><div><p class="eyebrow">KEEP THE MOMENTUM</p><h3>Recent workouts</h3></div><a class="text-link" href="{{ url_for('workouts') }}">View all ↗</a></div>
+    {% if recent_workouts %}<div class="table-wrap"><table><thead><tr><th>ACTIVITY</th><th>MEMBER</th><th>DURATION</th><th>DATE</th></tr></thead><tbody>{% for w in recent_workouts %}<tr><td><span class="activity-dot"></span><strong>{{ w.workout }}</strong></td><td>{{ w.member_name }}</td><td>{{ w.duration }} min</td><td>{{ w.workout_date }}</td></tr>{% endfor %}</tbody></table></div>{% else %}<div class="empty-state"><div class="empty-symbol">↗</div><strong>Your first workout is waiting.</strong><p>Log a session to start building your activity history.</p><a class="btn btn-secondary" href="{{ url_for('workouts') }}">Log a workout</a></div>{% endif %}
+  </div>
+  <div class="panel member-panel"><div class="panel-heading"><div><p class="eyebrow">YOUR COMMUNITY</p><h3>New members</h3></div><a class="text-link" href="{{ url_for('members') }}">View all ↗</a></div>
+    {% if members %}<div class="member-list">{% for m in members %}<a class="member-row" href="{{ url_for('member_detail', member_id=m.id) }}"><div class="member-avatar avatar-color-{{ loop.index % 4 }}">{{ m.name[:1]|upper }}</div><div class="member-meta"><strong>{{ m.name }}</strong><small>{{ m.program }} · {{ m.goal }}</small></div><span class="row-arrow">↗</span></a>{% endfor %}</div>{% else %}<div class="empty-state compact"><div class="empty-symbol">♙</div><strong>Grow your community</strong><p>Add your first gym member to get started.</p><a class="text-link" href="{{ url_for('new_member') }}">＋ Add a member</a></div>{% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -1,61 +1,46 @@
 pipeline {
     agent any
 
-    stages {
+    environment {
+        IMAGE_NAME = 'aceest-fitness'
+    }
 
+    stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out source code from GitHub'
                 checkout scm
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Python syntax check') {
             steps {
-                echo 'Installing Python dependencies'
+                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m py_compile app.py tests\\test_app.py'
+            }
+        }
 
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pip install --upgrade pip'
-
+        stage('Install dependencies and test') {
+            steps {
                 bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pip install -r requirements.txt'
+                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pytest -v'
             }
         }
 
-        stage('Build and Syntax Check') {
+        stage('Build Docker image') {
             steps {
-                echo 'Checking Python syntax'
-
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m compileall -q app.py'
+                bat 'docker build -t %IMAGE_NAME%:%BUILD_NUMBER% .'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run tests in Docker') {
             steps {
-                echo 'Running Pytest test cases'
-
-                bat '"C:\\Users\\Nivedhitha\\AppData\\Local\\Programs\\Python\\Python314\\python.exe" -m pytest -v
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                echo 'Building Docker image'
-
-                bat 'docker build -t aceest-fitness .'
+                bat 'docker run --rm %IMAGE_NAME%:%BUILD_NUMBER% python -m pytest -v'
             }
         }
     }
 
     post {
-        success {
-            echo 'SUCCESS: All pipeline stages completed successfully!'
-        }
-
-        failure {
-            echo 'FAILURE: A pipeline stage failed. Check Console Output for details.'
-        }
-
         always {
-            echo 'Jenkins pipeline execution finished.'
+            echo 'ACEest Fitness pipeline finished. Check the stage results above.'
         }
     }
 }

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101712">
+  <title>{% block title %}ACEest Fitness{% endblock %} · ACEest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="{{ url_for('index') }}">
+        <span class="brand-mark">A</span><span>ACE<span class="brand-light">est</span><small>FITNESS CLUB</small></span>
+      </a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav-links">
+        <a class="{{ 'active' if request.endpoint == 'index' else '' }}" href="{{ url_for('index') }}"><span class="nav-icon">⌂</span> Dashboard</a>
+        <a class="{{ 'active' if request.endpoint in ['members','new_member','member_detail','edit_member'] else '' }}" href="{{ url_for('members') }}"><span class="nav-icon">♙</span> Members</a>
+        <a class="{{ 'active' if request.endpoint == 'workouts' else '' }}" href="{{ url_for('workouts') }}"><span class="nav-icon">↗</span> Workout log</a>
+        <a class="{{ 'active' if request.endpoint == 'calculator' else '' }}" href="{{ url_for('calculator') }}"><span class="nav-icon">⌁</span> Calorie calculator</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-tip"><span class="tip-icon">✦</span><strong>Small steps. Big results.</strong><p>Consistency is the real superpower.</p></div>
+        <div class="profile-mini"><div class="avatar">A</div><div><strong>ACEest Admin</strong><small>Fitness workspace</small></div><span class="online-dot"></span></div>
+      </div>
+    </aside>
+    <main class="main-panel">
+      <header class="topbar">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
+        <div class="crumb">ACEest <span>/</span> {% block breadcrumb %}Overview{% endblock %}</div>
+        <div class="top-actions"><span class="status-pill"><i></i> SYSTEM ONLINE</span><div class="top-avatar">A</div></div>
+      </header>
+      <section class="page-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}<div class="flash-stack">{% for category, message in messages %}<div class="flash {{ category }}">{{ message }}<button type="button" class="flash-close" aria-label="Dismiss">×</button></div>{% endfor %}</div>{% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+        <footer class="footer"><span>© {{ 2026 }} ACEest Fitness & Gym</span><span>BUILT FOR PROGRESS <b>✦</b></span></footer>
+      </section>
+    </main>
+  </div>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
