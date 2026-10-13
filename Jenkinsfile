@@ -26,6 +26,7 @@ pipeline {
                 bat '\"%PYTHON%\" -m pip install -r requirements.txt'
             }
         }
+        
 
         stage('Run Pytest') {
             steps {
